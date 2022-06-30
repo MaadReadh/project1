@@ -1,11 +1,6 @@
-import random
-from django.http import HttpResponseRedirect
-from django.urls import reverse
+import random 
 import markdown2 
-from importlib.metadata import entry_points
-from importlib.resources import contents
-from ssl import TLSVersion
-from urllib.request import Request
+
 from django.shortcuts import redirect, render
 from . import util
 from .forms import *
@@ -18,7 +13,7 @@ def index(request):
     if q: 
         entries = [ e for e in entries if q.lower() in e.lower()]
     if q in entries:
-        return redirect('encyclopedia/single_entry', q)
+        return redirect('single_entry', q)
 
     return render(request, "encyclopedia/index.html", {
          "entries": entries
@@ -63,17 +58,17 @@ def edit_entry(request, title:str):
         
        content=util.get_entry(title)
        editform = EditEntry(initial={
-        'entry_title' : title,
-        'entry_content' : content})
+        'title' : title,
+        'content' : content})
 
        if request.method=='POST':
 
           form= EditEntry(request.POST)
           if form.is_valid():
-               edit_title = form.cleaned_data['entry_title']
-               edit_cont = form.cleaned_data['entry_content']
-               util.save_entry(edit_title,edit_cont)
-               return redirect('single_entry',edit_title)
+            #    edit_title = form.cleaned_data['title']
+               edit_cont = form.cleaned_data['content']
+               util.save_entry(title,edit_cont)
+               return redirect('single_entry',title)
           else:
             return render(request, 'encyclopedia/edit_entry.html', {'title': title, 'form':form})
 
